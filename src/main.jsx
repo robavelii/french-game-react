@@ -18,6 +18,7 @@ import RegisterScreen from './screens/RegisterScreen.jsx';
 import ProfileScreen from './screens/ProfileScreen.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 import GameScreen from './screens/GameScreen.jsx';
+import configureStore from './configureStore.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(

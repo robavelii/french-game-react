@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import FormContainer from '../components/FormContainer';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLoginMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/authSlice';
+import { useDispatch } from 'react-redux';
+import { login } from '../slices/usersApiSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 
@@ -15,24 +14,25 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [login, { isLoading }] = useLoginMutation();
-
-  const { userInfo } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo) {
       navigate('/game');
     }
-  }, [navigate, userInfo]);
+  }, [navigate]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      await dispatch(login({ email, password })).unwrap();
       navigate('/game');
     } catch (err) {
       toast.error(err?.data?.message || err.error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

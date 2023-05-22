@@ -32,11 +32,12 @@ function GamePage() {
   };
 
   const handleTranslation = () => {
+    console.log('Inside handleTranslation', currentWord.word);
     dispatch(fetchTranslation(currentWord?.word));
   };
 
   return (
-    <div className='App'>
+    <div className='Game'>
       <h1>French Word Game</h1>
       <p>
         <span onClick={handleTranslation}>{currentWord?.word}</span>

@@ -1,4 +1,4 @@
-import Game from '../components/GamePage';
+import Game from '../components/GamePages';
 
 const GameScreen = () => {
   return <Game />;

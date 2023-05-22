@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
-import { useUpdateUserMutation } from '../slices/usersApiSlice';
+import { updateUser } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 
 const ProfileScreen = () => {
@@ -18,9 +18,7 @@ const ProfileScreen = () => {
 
   const dispatch = useDispatch();
 
-  const { userInfo } = useSelector((state) => state.auth);
-
-  const [updateProfile, { isLoading }] = useUpdateUserMutation();
+  const { userInfo, status, error } = useSelector((state) => state.user);
 
   useEffect(() => {
     setFirstName(userInfo.firstName);
@@ -28,27 +26,23 @@ const ProfileScreen = () => {
     setEmail(userInfo.email);
   }, [userInfo.email, userInfo.firstName, userInfo.lastName]);
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
+    } else if (!firstName || !lastName || !email) {
+      toast.error('Please fill in all required fields');
     } else {
-      try {
-        const res = await updateProfile({
-          _id: userInfo._id,
-          firstName,
-          lastName,
-          email,
-          password,
-        }).unwrap();
-        console.log(res);
-        dispatch(setCredentials(res));
-        toast.success('Profile updated successfully');
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
+      dispatch(
+        updateUser({ _id: userInfo._id, firstName, lastName, email, password })
+      );
     }
   };
+
+  if (status === 'loading') {
+    return <Loader />;
+  }
+
   return (
     <FormContainer>
       <h1>Update Profile</h1>

@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const baseUrl = 'http://localhost:5000/api/v1';
 
+//to test logic from the frontend
 const masculineEndings = ['age', 'aire', 'isme', 'ment', 'oir', 'sme', 'é'];
 const feminineEndings = [
   'ade',
@@ -35,7 +36,8 @@ export const wordsSlice = createSlice({
   reducers: {
     setWord: (state, action) => {
       console.log('Action', action.payload);
-      state.word = action.payload;
+      state.word = action.payload.word;
+      state.currentWordIndex = action.payload.index;
       state.isCorrect = null;
       state.correctArticle = null;
       state.correctEnding = null;
@@ -53,15 +55,24 @@ export const wordsSlice = createSlice({
       state.correctEnding = action.payload.ending;
     },
     setTranslation: (state, action) => {
-      state.translation = action.payload;
+      state.translation = action.payload.translation_en;
     },
   },
 });
 
+const config = {
+  headers: {
+    Authorization: `Bearer ${
+      JSON.parse(localStorage.getItem('userInfo')).accessToken
+    }`,
+  },
+};
+
 export const fetchWord = () => async (dispatch) => {
   try {
-    const response = await axios.get(`${baseUrl}/words/random`);
+    const response = await axios.get(`${baseUrl}/words/random`, config);
     dispatch(setWord(response.data));
+    console.log('Inside fetch', response.data);
   } catch (error) {
     console.error(error);
   }
@@ -102,7 +113,10 @@ export const submitAnswer = (selected) => (dispatch, getState) => {
 
 export const fetchTranslation = (word) => async (dispatch) => {
   try {
-    const response = await axios.get(`${baseUrl}/words/example?word=${word}`);
+    const response = await axios.get(
+      `${baseUrl}/words/example?word=${word}`,
+      config
+    );
     dispatch(setTranslation(response.data.example.translation_en));
   } catch (error) {
     console.error(error);

@@ -6,8 +6,7 @@ import FormContainer from '../components/FormContainer';
 import Loader from '../components/Loader';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRegisterMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/authSlice';
+import { register } from '../slices/usersApiSlice';
 import { toast } from 'react-toastify';
 
 const RegisterScreen = () => {
@@ -20,9 +19,7 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [register, { isLoading }] = useRegisterMutation();
-
-  const { userInfo } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (userInfo) {
@@ -32,19 +29,15 @@ const RegisterScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
     } else {
       try {
-        const res = await register({
-          firstName,
-          lastName,
-          email,
-          password,
-        }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        navigate(redirect);
+        const res = await dispatch(
+          register({ firstName, lastName, email, password })
+        ).unwrap();
+        localStorage.setItem('userInfo', JSON.stringify(res));
+        navigate('/');
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
