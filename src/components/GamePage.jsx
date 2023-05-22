@@ -32,14 +32,14 @@ function GamePage() {
   };
 
   const handleTranslation = () => {
-    dispatch(fetchTranslation(currentWord.word));
+    dispatch(fetchTranslation(currentWord?.word));
   };
 
   return (
     <div className='App'>
       <h1>French Word Game</h1>
       <p>
-        <span onClick={handleTranslation}>{currentWord.word}</span>
+        <span onClick={handleTranslation}>{currentWord?.word}</span>
       </p>
       {translation && (
         <div className='translation'>
@@ -71,12 +71,12 @@ function GamePage() {
             <span className='correct-answer'>
               The correct article{' '}
               <span className='correct-article'>
-                {currentWord.gender === 'M' ? 'LE' : 'LA'}
+                {currentWord?.gender === 'M' ? 'LE' : 'LA'}
               </span>{' '}
-              {currentWord.word.endsWith('e') ? 'is' : 'begins with'}{' '}
+              {currentWord?.word.endsWith('e') ? 'is' : 'begins with'}{' '}
               <span className='correct-ending'>
-                {currentWord.word.endsWith('e') ? '' : '…'}
-                {currentWord.word.slice(-2)}
+                {currentWord?.word?.endsWith('e') ? '' : '…'}
+                {currentWord?.word?.slice(-2)}
               </span>
               .
             </span>
