@@ -1,0 +1,19 @@
+.selected {
+    background-color: #ff8;
+  }
+  
+  .result {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid;
+  }
+  
+  .correct {
+    color: green;
+  }
+  
+  .wrong {
+    color: red;
+    font-weight: bold;
+  }
+  
