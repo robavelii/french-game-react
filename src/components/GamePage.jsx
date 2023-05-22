@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  fetchWords,
+  fetchWord,
   selectCurrentWord,
   selectIsCorrect,
   selectScore,
@@ -12,16 +13,17 @@ import {
 } from '../slices/wordsSlice';
 import '../index.css';
 
-function Game() {
+function GamePage() {
   const dispatch = useDispatch();
   const currentWord = useSelector(selectCurrentWord);
   const isCorrect = useSelector(selectIsCorrect);
   const score = useSelector(selectScore);
   const translation = useSelector(selectTranslation);
   const [selected, setSelected] = useState('');
+  const [result, setResult] = useState('');
 
   useEffect(() => {
-    dispatch(fetchWords());
+    dispatch(fetchWord());
   }, []);
 
   const handleAnswer = () => {
@@ -65,15 +67,15 @@ function Game() {
       {isCorrect !== null && (
         <div className={result + (isCorrect ? 'correct' : 'wrong')}>
           {isCorrect ? 'Correct!' : 'Wrong!'}
-          {isCorrect === false && (
+          {!isCorrect && (
             <span className='correct-answer'>
-              The correct article
+              The correct article{' '}
               <span className='correct-article'>
-                {currentWord.gender === 'masculine' ? 'LE' : 'LA'}
-              </span>
-              {currentWord.word.endsWith('e') ? 'is' : 'begins with'}
+                {currentWord.gender === 'M' ? 'LE' : 'LA'}
+              </span>{' '}
+              {currentWord.word.endsWith('e') ? 'is' : 'begins with'}{' '}
               <span className='correct-ending'>
-                ${currentWord.word.endsWith('e') ? '' : '...'}$
+                {currentWord.word.endsWith('e') ? '' : '…'}
                 {currentWord.word.slice(-2)}
               </span>
               .
@@ -85,4 +87,5 @@ function Game() {
     </div>
   );
 }
-export default Game;
+
+export default GamePage;

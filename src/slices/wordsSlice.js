@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-const baseUrl = 'http:localhost:5000/api/v1';
+
+const baseUrl = 'http://localhost:5000/api/v1';
+
 const masculineEndings = ['age', 'aire', 'isme', 'ment', 'oir', 'sme', 'é'];
 const feminineEndings = [
   'ade',
@@ -20,7 +20,7 @@ const feminineEndings = [
 ];
 
 const initialState = {
-  words: [],
+  word: null,
   currentWordIndex: 0,
   isCorrect: null,
   score: 0,
@@ -28,15 +28,14 @@ const initialState = {
   correctEnding: null,
   translation: null,
 };
+
 export const wordsSlice = createSlice({
   name: 'words',
   initialState,
   reducers: {
-    setWords: (state, action) => {
-      Object.assign(state, initialState, { words: action.payload });
-    },
-    nextWord: (state) => {
-      state.currentWordIndex++;
+    setWord: (state, action) => {
+      console.log('Action', action.payload);
+      state.word = action.payload;
       state.isCorrect = null;
       state.correctArticle = null;
       state.correctEnding = null;
@@ -59,20 +58,19 @@ export const wordsSlice = createSlice({
   },
 });
 
-export const fetchWords = () => async (dispatch) => {
+export const fetchWord = () => async (dispatch) => {
   try {
     const response = await axios.get(`${baseUrl}/words/random`);
-    console.log(response.data);
-    dispatch(setWords(response.data));
+    dispatch(setWord(response.data));
   } catch (error) {
     console.error(error);
   }
 };
 
-export const selectCurrentWord = (state) => state.words.word[state.words.word];
-export const selectIsCorrect = (state) => state.words.isCorrect;
-export const selectScore = (state) => state.words.score;
-export const selectTranslation = (state) => state.words.translation;
+export const selectCurrentWord = (state) => state.word;
+export const selectIsCorrect = (state) => state.isCorrect;
+export const selectScore = (state) => state.score;
+export const selectTranslation = (state) => state.translation;
 
 export const submitAnswer = (selected) => (dispatch, getState) => {
   const { word, gender } = selectCurrentWord(getState());
@@ -94,23 +92,35 @@ export const submitAnswer = (selected) => (dispatch, getState) => {
     if (!correctEnding) {
       correctEnding = word;
     }
-    dispatch(setCorrectArticle(correctArticle, correctEnding));
+    dispatch(
+      setCorrectArticle({ article: correctArticle, ending: correctEnding })
+    );
   }
   dispatch(fetchTranslation(word));
   dispatch(nextWord());
 };
 
-export const setCorrectArticle = (article, ending) => (dispatch) => {
-  dispatch({ type: 'words/setCorrectArticle', payload: { article, ending } });
-};
-
 export const fetchTranslation = (word) => async (dispatch) => {
   try {
-    const response = await axios.get(`/words/example?${word}`);
+    const response = await axios.get(`${baseUrl}/words/example?word=${word}`);
     dispatch(setTranslation(response.data.example.translation_en));
   } catch (error) {
     console.error(error);
   }
 };
 
-export const { setWords, nextWord, setCorrect, setWrong } = wordsSlice.actions;
+// actions
+export const {
+  setWord,
+  setCorrect,
+  setWrong,
+  setCorrectArticle,
+  setTranslation,
+} = wordsSlice.actions;
+
+// async thunks
+export const nextWord = () => (dispatch) => {
+  dispatch(fetchWord());
+};
+
+export default wordsSlice.reducer;
